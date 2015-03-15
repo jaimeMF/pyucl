@@ -8,8 +8,19 @@ class TestDecoder(unittest.TestCase):
         ucl_conf = '''
             "author": "Jules Verne",
             "title": "Voyage au centre de la Terre",
+            title_loc {
+                en: "Journey to the Center of the Earth"
+                es: "Viaje al centro de la Tierra"
+            }
         '''.encode('utf-8')
-        expected_result = {'author': 'Jules Verne', 'title': 'Voyage au centre de la Terre'}
+        expected_result = {
+            'author': 'Jules Verne',
+            'title': 'Voyage au centre de la Terre',
+            'title_loc': {
+                'en': 'Journey to the Center of the Earth',
+                'es': 'Viaje al centro de la Tierra',
+            },
+        }
         result = ucl.loads(ucl_conf)
         self.assertEqual(result, expected_result)
 

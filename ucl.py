@@ -51,9 +51,7 @@ def _iter_ucl_object(obj):
     iterator = ffi.new('ucl_object_iter_t *')
     cur = ffi.new('ucl_object_t *')
     while True:
-        cur = ffi.gc(
-            _ucl.ucl_iterate_object(obj, iterator, True),
-            _ucl.ucl_object_unref)
+        cur = _ucl.ucl_iterate_object(obj, iterator, True)
         if cur == ffi.NULL:
             break
         yield cur
