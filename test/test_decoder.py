@@ -12,6 +12,13 @@ class TestDecoder(unittest.TestCase):
                 en: "Journey to the Center of the Earth"
                 es: "Viaje al centro de la Tierra"
             }
+            tags: ["science fiction", "french"]
+            year: 1864
+            price: 23.42
+            delivery_time: 3d
+            available: true
+            ebook: false
+            webpage: null
         '''.encode('utf-8')
         expected_result = {
             'author': 'Jules Verne',
@@ -20,6 +27,13 @@ class TestDecoder(unittest.TestCase):
                 'en': 'Journey to the Center of the Earth',
                 'es': 'Viaje al centro de la Tierra',
             },
+            'tags': ['science fiction', 'french'],
+            'year': 1864,
+            'price': 23.42,
+            'delivery_time': 259200.0,
+            'available': True,
+            'ebook': False,
+            'webpage': None
         }
         result = ucl.loads(ucl_conf)
         self.assertEqual(result, expected_result)

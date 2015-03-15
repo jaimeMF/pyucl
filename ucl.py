@@ -5,7 +5,12 @@ ffi = FFI()
 ffi.cdef("""
     typedef enum {
         UCL_OBJECT,
+        UCL_ARRAY,
+        UCL_INT,
+        UCL_FLOAT,
         UCL_STRING,
+        UCL_BOOLEAN,
+        UCL_TIME,
         UCL_NULL,
         ...
     } ucl_type_t;
@@ -27,8 +32,11 @@ ffi.cdef("""
         ucl_object_iter_t *iter, bool expand_values);
     const char* ucl_object_key (const ucl_object_t *obj);
 
+    int64_t ucl_object_toint (const ucl_object_t *obj);
+    double ucl_object_todouble (const ucl_object_t *obj);
     const char* ucl_object_tostring (const ucl_object_t *obj);
     const char* ucl_object_tostring_forced (const ucl_object_t *obj);
+    bool ucl_object_toboolean (const ucl_object_t *obj);
 """)
 
 
@@ -65,8 +73,18 @@ def _convert_ucl_object(obj):
             value = _convert_ucl_object(child)
             res[key] = value
         return res
-    if obj.type == _ucl.UCL_STRING:
+    elif obj.type == _ucl.UCL_ARRAY:
+        return [_convert_ucl_object(entry) for entry in _iter_ucl_object(obj)]
+    elif obj.type == _ucl.UCL_INT:
+        return _ucl.ucl_object_toint(obj)
+    elif obj.type in [_ucl.UCL_FLOAT, _ucl.UCL_TIME]:
+        return _ucl.ucl_object_todouble(obj)
+    elif obj.type == _ucl.UCL_STRING:
         return ffi.string(_ucl.ucl_object_tostring(obj)).decode('utf-8')
+    elif obj.type == _ucl.UCL_BOOLEAN:
+        return bool(_ucl.ucl_object_toboolean(obj))
+    elif obj.type == _ucl.UCL_NULL:
+        return None
     else:
         raise UclConversionError(
             'Unsupported object type: {}'.format(obj.type))
