@@ -42,3 +42,22 @@ class TestDecoder(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
         self.assertRaises(ucl.UclDecoderError, ucl.loads, b'"foo":"ds')
+
+    def test_hierarchy(self):
+        ucl_conf = b'''
+            section "blah" {
+                    key = value;
+            }
+            section foo {
+                    key = value;
+            }
+        '''
+
+        result = ucl.loads(ucl_conf)
+        expected_result = {
+            'section': {
+                'blah': {'key': 'value'},
+                'foo': {'key': 'value'},
+            },
+        }
+        self.assertEqual(result, expected_result)

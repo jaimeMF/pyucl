@@ -28,9 +28,12 @@ ffi.cdef("""
 
     ucl_object_t * ucl_object_new (void);
     void ucl_object_unref (ucl_object_t *obj);
-    const ucl_object_t* ucl_iterate_object (const ucl_object_t *obj,
-        ucl_object_iter_t *iter, bool expand_values);
     const char* ucl_object_key (const ucl_object_t *obj);
+
+    ucl_object_iter_t ucl_object_iterate_new (const ucl_object_t *obj);
+    const ucl_object_t* ucl_object_iterate_safe (ucl_object_iter_t iter,
+        bool expand_values);
+    void ucl_object_iterate_free (ucl_object_iter_t it);
 
     int64_t ucl_object_toint (const ucl_object_t *obj);
     double ucl_object_todouble (const ucl_object_t *obj);
@@ -56,13 +59,15 @@ class UclConversionError(UclError):
 
 
 def _iter_ucl_object(obj):
-    iterator = ffi.new('ucl_object_iter_t *')
-    cur = ffi.new('ucl_object_t *')
-    while True:
-        cur = _ucl.ucl_iterate_object(obj, iterator, True)
-        if cur == ffi.NULL:
-            break
-        yield cur
+    iterator = _ucl.ucl_object_iterate_new(obj)
+    try:
+        while True:
+            cur = _ucl.ucl_object_iterate_safe(iterator, True)
+            if cur == ffi.NULL:
+                break
+            yield cur
+    finally:
+        _ucl.ucl_object_iterate_free(iterator)
 
 
 def _convert_ucl_object(obj):
