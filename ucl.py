@@ -108,30 +108,22 @@ class UclDecoder(object):
         obj = _ucl.ucl_parser_get_object(self._parser)
         return _convert_ucl_object(obj)
 
-    def loads(self, s):
+    def decode(self, s):
         _ucl.ucl_parser_add_string(self._parser, s, len(s))
-        self._check_error()
-        return self._get_result()
-
-    def load(self, fp):
-        contents = fp.read().strip()
-        _ucl.ucl_parser_add_string(self._parser, contents, 0)
         self._check_error()
         return self._get_result()
 
 
 def loads(s):
     decoder = UclDecoder()
-    return decoder.loads(s)
+    return decoder.decode(s)
 
 
 def load(fp):
-    decoder = UclDecoder()
-    return decoder.load(fp)
+    return loads(fp.read())
 
 if __name__ == '__main__':
     import sys
-    decoder = UclDecoder()
     with open(sys.argv[1], 'rb') as f:
-        result = decoder.load(f)
+        result = load(f)
     print(result)
