@@ -119,9 +119,11 @@ class UclDecoder(object):
         self._check_error()
         return self._get_result()
 
+
 def loads(s):
     decoder = UclDecoder()
     return decoder.loads(s)
+
 
 def load(fp):
     decoder = UclDecoder()

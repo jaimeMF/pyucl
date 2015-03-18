@@ -3,6 +3,7 @@ import unittest
 
 import ucl
 
+
 class TestDecoder(unittest.TestCase):
     def test_decoder(self):
         ucl_conf = '''
