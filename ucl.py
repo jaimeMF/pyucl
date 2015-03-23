@@ -46,15 +46,15 @@ ffi.cdef("""
 _ucl = ffi.verify('#include "ucl.h"', libraries=['ucl'])
 
 
-class UclError(Exception):
+class UCLError(Exception):
     pass
 
 
-class UclDecoderError(UclError):
+class UCLDecoderError(UCLError):
     pass
 
 
-class UclConversionError(UclError):
+class UCLConversionError(UCLError):
     pass
 
 
@@ -91,18 +91,18 @@ def _convert_ucl_object(obj):
     elif obj.type == _ucl.UCL_NULL:
         return None
     else:
-        raise UclConversionError(
+        raise UCLConversionError(
             'Unsupported object type: {}'.format(obj.type))
 
 
-class UclDecoder(object):
+class UCLDecoder(object):
     def __init__(self):
         self._parser = ffi.gc(_ucl.ucl_parser_new(0), _ucl.ucl_parser_free)
 
     def _check_error(self):
         error = _ucl.ucl_parser_get_error(self._parser)
         if error != ffi.NULL:
-            raise UclDecoderError(ffi.string(error))
+            raise UCLDecoderError(ffi.string(error))
 
     def _get_result(self):
         obj = _ucl.ucl_parser_get_object(self._parser)
@@ -115,7 +115,7 @@ class UclDecoder(object):
 
 
 def loads(s):
-    decoder = UclDecoder()
+    decoder = UCLDecoder()
     return decoder.decode(s)
 
 

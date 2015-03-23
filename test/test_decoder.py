@@ -42,7 +42,7 @@ class TestDecoder(unittest.TestCase):
         result = ucl.load(io.BytesIO(ucl_conf))
         self.assertEqual(result, expected_result)
 
-        self.assertRaises(ucl.UclDecoderError, ucl.loads, b'"foo":"ds')
+        self.assertRaises(ucl.UCLDecoderError, ucl.loads, b'"foo":"ds')
 
     def test_hierarchy(self):
         ucl_conf = b'''
