@@ -25,7 +25,7 @@ def _iter_ucl_object(obj):
         _ucl.ucl_object_iterate_free(iterator)
 
 
-def _convert_ucl_object(obj):
+def _convert_ucl_object_direct(obj):
     if obj.type == _ucl.UCL_OBJECT:
         res = {}
         for child in _iter_ucl_object(obj):
@@ -48,6 +48,19 @@ def _convert_ucl_object(obj):
     else:
         raise UCLConversionError(
             'Unsupported object type: {}'.format(obj.type))
+
+
+def _convert_ucl_object(obj):
+    res = _convert_ucl_object_direct(obj)
+
+    # for https://github.com/vstakhov/libucl/blob/master/README.md#automatic-arrays-creation
+    # there doesn't seem to be a function in libucl to do this
+    if obj.next != ffi.NULL and obj.type != _ucl.UCL_OBJECT:
+        res = [res]
+        while obj.next != ffi.NULL:
+            obj = obj.next
+            res.append(_convert_ucl_object_direct(obj))
+    return res
 
 
 class UCLDecoder(object):

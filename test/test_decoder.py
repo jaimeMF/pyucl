@@ -62,3 +62,15 @@ class TestDecoder(unittest.TestCase):
             },
         }
         self.assertEqual(result, expected_result)
+
+    def test_array_creation(self):
+        ucl_conf = b'''
+            key = 1
+            key = 2
+        '''
+
+        result = ucl.loads(ucl_conf)
+        expected_result = {
+            'key': [1, 2],
+        }
+        self.assertEqual(result, expected_result)

@@ -14,7 +14,7 @@ ffi.cdef("""
         UCL_NULL,
         ...
     } ucl_type_t;
-    typedef struct {uint16_t type;...;} ucl_object_t;
+    typedef struct ucl_object_s {uint16_t type; struct ucl_object_s *next; ...;} ucl_object_t;
     typedef struct {...;} ucl_object_iter_t;
 
 
