@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import io
 import unittest
 
@@ -20,7 +22,7 @@ class TestDecoder(unittest.TestCase):
             available: true
             ebook: false
             webpage: null
-        '''.encode('utf-8')
+        '''
         expected_result = {
             'author': 'Jules Verne',
             'title': 'Voyage au centre de la Terre',
@@ -39,13 +41,13 @@ class TestDecoder(unittest.TestCase):
         result = ucl.loads(ucl_conf)
         self.assertEqual(result, expected_result)
 
-        result = ucl.load(io.BytesIO(ucl_conf))
+        result = ucl.load(io.StringIO(ucl_conf))
         self.assertEqual(result, expected_result)
 
-        self.assertRaises(ucl.UCLDecoderError, ucl.loads, b'"foo":"ds')
+        self.assertRaises(ucl.UCLDecoderError, ucl.loads, '"foo":"ds')
 
     def test_hierarchy(self):
-        ucl_conf = b'''
+        ucl_conf = '''
             section "blah" {
                     key = value;
             }
@@ -64,7 +66,7 @@ class TestDecoder(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_array_creation(self):
-        ucl_conf = b'''
+        ucl_conf = '''
             key = 1
             key = 2
         '''

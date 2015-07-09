@@ -80,7 +80,8 @@ class UCLDecoder(object):
         return _convert_ucl_object(obj)
 
     def decode(self, s):
-        _ucl.ucl_parser_add_string(self._parser, s, len(s))
+        b = s.encode('utf-8')
+        _ucl.ucl_parser_add_string(self._parser, b, len(b))
         self._check_error()
         return self._get_result()
 
@@ -146,6 +147,6 @@ def dump(obj, fp, emit_type=DEFAULT_EMITTER):
 
 if __name__ == '__main__':
     import sys
-    with open(sys.argv[1], 'rb') as f:
+    with open(sys.argv[1], 'rt') as f:
         result = load(f)
     dump(result, sys.stdout)

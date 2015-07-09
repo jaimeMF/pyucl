@@ -25,12 +25,12 @@ class TestDecoder(unittest.TestCase):
             'webpage': None,
         }
         conf = ucl.dumps(info)
-        new_info = ucl.loads(conf.encode('utf-8'))
+        new_info = ucl.loads(conf)
         self.assertEqual(new_info, info)
 
         buffer = io.StringIO()
         ucl.dump(info, buffer)
-        new_info = ucl.loads(buffer.getvalue().encode('utf-8'))
+        new_info = ucl.loads(buffer.getvalue())
         self.assertEqual(new_info, info)
 
         json_repr = ucl.dumps(info, 'json')
