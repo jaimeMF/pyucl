@@ -1,5 +1,8 @@
 from _ucl import ffi, lib as _ucl
 
+if str is bytes:
+    str = unicode
+
 
 class UCLError(Exception):
     pass
@@ -82,6 +85,46 @@ class UCLDecoder(object):
         return self._get_result()
 
 
+def _to_ucl_object(obj):
+    if isinstance(obj, list):
+        array = _ucl.ucl_object_typed_new(_ucl.UCL_ARRAY)
+        for item in obj:
+            _ucl.ucl_array_append(array, _to_ucl_object(item))
+        return array
+    elif isinstance(obj, dict):
+        dic = _ucl.ucl_object_typed_new(_ucl.UCL_OBJECT)
+        for k, v in obj.items():
+            if not isinstance(k, str):
+                raise TypeError("UCL only supports string keys: {}".format(k))
+            _ucl.ucl_object_replace_key(dic, _to_ucl_object(v), k.encode('utf-8'), 0, True)
+        return dic
+    elif isinstance(obj, str):
+        return _ucl.ucl_object_fromstring(obj.encode('utf-8'))
+    elif isinstance(obj, int):
+        return _ucl.ucl_object_fromint(obj)
+    elif isinstance(obj, float):
+        return _ucl.ucl_object_fromdouble(obj)
+    elif obj is None:
+        return _ucl.ucl_object_typed_new(_ucl.UCL_NULL)
+    else:
+        raise TypeError("{} is not UCL serializable".format(repr(obj)))
+
+EMITTERS = {
+    'config': _ucl.UCL_EMIT_CONFIG,
+    'json': _ucl.UCL_EMIT_JSON,
+    'json_compact': _ucl.UCL_EMIT_JSON_COMPACT,
+    'yaml': _ucl.UCL_EMIT_YAML,
+}
+DEFAULT_EMITTER = 'config'
+
+
+class UCLEncoder(object):
+    def encode(self, obj, emit_type=DEFAULT_EMITTER):
+        emit_type = EMITTERS[emit_type]
+        ucl_obj = _to_ucl_object(obj)
+        return ffi.string(_ucl.ucl_object_emit(ucl_obj, emit_type)).decode('utf-8')
+
+
 def loads(s):
     decoder = UCLDecoder()
     return decoder.decode(s)
@@ -90,8 +133,19 @@ def loads(s):
 def load(fp):
     return loads(fp.read())
 
+
+def dumps(obj, emit_type=DEFAULT_EMITTER):
+    encoder = UCLEncoder()
+    return encoder.encode(obj, emit_type)
+
+
+def dump(obj, fp, emit_type=DEFAULT_EMITTER):
+    s = dumps(obj, emit_type)
+    fp.write(s)
+
+
 if __name__ == '__main__':
     import sys
     with open(sys.argv[1], 'rb') as f:
         result = load(f)
-    print(result)
+    dump(result, sys.stdout)

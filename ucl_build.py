@@ -27,8 +27,15 @@ ffi.cdef("""
     ucl_object_t* ucl_parser_get_object (struct ucl_parser *parser);
 
     ucl_object_t * ucl_object_new (void);
+    ucl_object_t* ucl_object_typed_new (ucl_type_t type);
+    ucl_object_t *ucl_object_fromstring (const char *str);
+    ucl_object_t* ucl_object_fromint (int64_t iv);
+    ucl_object_t* ucl_object_fromdouble (double dv);
     void ucl_object_unref (ucl_object_t *obj);
+
     const char* ucl_object_key (const ucl_object_t *obj);
+    bool ucl_array_append (ucl_object_t *top, ucl_object_t *elt);
+    bool ucl_object_replace_key (ucl_object_t *top, ucl_object_t *elt, const char *key, size_t keylen, bool copy_key);
 
     ucl_object_iter_t ucl_object_iterate_new (const ucl_object_t *obj);
     const ucl_object_t* ucl_object_iterate_safe (ucl_object_iter_t iter,
@@ -40,6 +47,14 @@ ffi.cdef("""
     const char* ucl_object_tostring (const ucl_object_t *obj);
     const char* ucl_object_tostring_forced (const ucl_object_t *obj);
     bool ucl_object_toboolean (const ucl_object_t *obj);
+
+    typedef enum ucl_emitter {
+        UCL_EMIT_JSON,
+        UCL_EMIT_JSON_COMPACT,
+        UCL_EMIT_CONFIG,
+        UCL_EMIT_YAML,
+    };
+    unsigned char *ucl_object_emit (const ucl_object_t *obj, enum ucl_emitter emit_type);
 """)
 
 
