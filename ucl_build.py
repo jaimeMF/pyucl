@@ -31,6 +31,7 @@ ffi.cdef("""
     ucl_object_t *ucl_object_fromstring (const char *str);
     ucl_object_t* ucl_object_fromint (int64_t iv);
     ucl_object_t* ucl_object_fromdouble (double dv);
+    ucl_object_t* ucl_object_frombool (bool bv);
     void ucl_object_unref (ucl_object_t *obj);
 
     const char* ucl_object_key (const ucl_object_t *obj);

@@ -7,7 +7,7 @@ import unittest
 import ucl
 
 
-class TestDecoder(unittest.TestCase):
+class TestEncoder(unittest.TestCase):
     def test_encoder(self):
         info = {
             'author': 'Jules Verne',

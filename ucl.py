@@ -101,6 +101,8 @@ def _to_ucl_object(obj):
         return dic
     elif isinstance(obj, str):
         return _ucl.ucl_object_fromstring(obj.encode('utf-8'))
+    elif isinstance(obj, bool):
+        return _ucl.ucl_object_frombool(obj)
     elif isinstance(obj, int):
         return _ucl.ucl_object_fromint(obj)
     elif isinstance(obj, float):
