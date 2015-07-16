@@ -129,20 +129,42 @@ class UCLEncoder(object):
 
 
 def loads(s):
+    """Load object from a string.
+
+    :param str s: Serialized information in UCL format
+    :return: object loaded from the string
+    :raises UCLDecoderError: if the string is not valid UCL
+    """
     decoder = UCLDecoder()
     return decoder.decode(s)
 
 
 def load(fp):
+    """Load object from the :term:`file object` *fp*.
+
+    See :func:`loads`.
+    """
     return loads(fp.read())
 
 
 def dumps(obj, emit_type=DEFAULT_EMITTER):
+    """Serialize *obj* to a :class:`str` with the format specified by *emit_type*.
+
+    :param obj: Object to encode
+    :param str emit_type: One of 'config', 'json', 'json_compact' or 'yaml'
+    :return: the serialized object
+    :rtype: str
+    :raises TypeError: if an object can't be converted to a ucl object
+    """
     encoder = UCLEncoder()
     return encoder.encode(obj, emit_type)
 
 
 def dump(obj, fp, emit_type=DEFAULT_EMITTER):
+    """Serialize an object to the :term:`file object` *fp*.
+
+    See :func:`dumps`
+    """
     s = dumps(obj, emit_type)
     fp.write(s)
 
